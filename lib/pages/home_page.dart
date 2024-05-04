@@ -24,11 +24,11 @@ class _HomePageState extends State<HomePage> {
 
     homeBloc = BlocProvider.of(context);
     homeBloc.add(LoadPostListEvent());
-    // homeBloc.stream.listen((state) {
-    //   if (state is HomeDeletePostState) {
-    //     homeBloc.add(LoadPostListEvent());
-    //   }
-    // });
+    homeBloc.stream.listen((state) {
+      if (state is HomeDeletePostState) {
+        homeBloc.add(LoadPostListEvent());
+      }
+    });
   }
 
   @override

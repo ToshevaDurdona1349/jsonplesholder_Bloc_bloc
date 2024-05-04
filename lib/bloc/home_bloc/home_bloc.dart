@@ -5,6 +5,8 @@ import '../../models/post_model.dart';
 import '../../pages/creat_page.dart';
 import '../../pages/update_page.dart';
 import '../../services/http_service.dart';
+import '../create_bloc/create_bloc.dart';
+import '../update_bloc/update_bloc.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -14,11 +16,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   HomeBloc() : super(HomeInitialState()) {
     on<LoadPostListEvent>(_onLoadPostListEvent);
+    // delet uchun
     on<DeletePostEvent>(_onDeletePostEvent);
   }
 
-  Future<void> _onDeletePostEvent(
-      DeletePostEvent event, Emitter<HomeState> emit) async {
+  Future<void> _onDeletePostEvent(DeletePostEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoadingState());
 
     var response = await Network.DEL(
@@ -35,8 +37,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       LoadPostListEvent event, Emitter<HomeState> emit) async {
     emit(HomeLoadingState());
 
-    var response =
-    await Network.GET(Network.API_POST_LIST, Network.paramsEmpty());
+    var response = await Network.GET(Network.API_POST_LIST, Network.paramsEmpty());
     if (response != null) {
       var postList = Network.parsePostList(response);
       posts.addAll(postList);
@@ -50,7 +51,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     bool result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return const CreatPage();
+          return  BlocProvider(
+            create: (context)=>CreateBloc(),
+              child: CreatePage()
+          );
         },
       ),
     );
@@ -64,7 +68,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     bool result = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
-          return UpdatePage(post: post);
+          return BlocProvider(
+              create: (context)=>UpdateBloc(),
+              child: UpdatePage(post: post));
         },
       ),
     );
